@@ -3,10 +3,14 @@ library(dplyr)
 rm(list=ls())
 arrears <- function(current_date, base_date){
     ## Read the data
-    base_file <- paste0("./Arrears/Loan_Accounts-chifeng-liyang.qin-",base_date, ".xls")
-    latest_file <- paste0("./Arrears/Loan_Accounts-chifeng-liyang.qin-",current_date,".xls")
-    classes <- c(rep("character",10), rep("Date", 2), rep("numeric",13))
-    base_data <- read.xlsx2(base_file, sheetIndex =1, header = TRUE, colClasses = classes, encoding = "urf-8")
+    base_pattern <- paste0("Loan_Accounts-chifeng-liyang.qin-",base_date)
+    latest_pattern <- paste0("Loan_Accounts-chifeng-liyang.qin-",current_date)
+    base_file <- list.files("./Arrears", recursive =TRUE, all.files = TRUE, pattern = base_pattern)
+    base_file <- paste0("./Arrears/", base_file)
+    latest_file <- list.files("./Arrears", recursive = TRUE, all.files =TRUE, pattern = latest_pattern)
+    latest_file <- paste0("./Arrears/", latest_file)
+    classes <- c(rep("character",11), rep("numeric",13), rep("Date", 2))
+    base_data <- read.xlsx2(base_file,sheetIndex =1, header = TRUE, colClasses = classes, encoding = "urf-8")
     latest_data <- read.xlsx2(latest_file, sheetIndex =1, header = TRUE, colClasses = classes, encoding = "urf-8")
     
     # Subset the accounts in arrears
@@ -19,7 +23,7 @@ arrears <- function(current_date, base_date){
     arrears_start <- rename(arrears_start, Starting.Principal.Balance = Principal.Balance)
     arrears_end <- arrears_latest[c("Account.ID","Principal.Balance")]
     arrears_end <- rename(arrears_end, Ending.Principal.Balance = Principal.Balance)
-   
+    
     ## Join the mutual accounts in these two data sets. 
     mutual_account <- full_join(arrears_start, arrears_end, by = "Account.ID")
     ## Find new delinquencies; Search new ID in old data base
@@ -50,7 +54,7 @@ arrears <- function(current_date, base_date){
         repaid_output <- cbind(Date = base_date, Type = "- 减少", repaid_output)
     }
     ## Export the data to excel. 
-
+    
     output_cf <- data.frame()
     
     if(exists("new_output")){
@@ -62,7 +66,7 @@ arrears <- function(current_date, base_date){
         output_cf <- rbind(output_cf, closed_output)
         rm(closed_output)
     }
-   
+    
     if(exists("repaid_output")){
         output_cf <- rbind(output_cf, repaid_output)
         rm(repaid_output)
@@ -70,9 +74,13 @@ arrears <- function(current_date, base_date){
     
     ############################################################################
     ## Repeat the process for Wanzhou
-   
-    base_file <- paste0("./Arrears/Loan_Accounts-wanzhou-liyang.qin-",base_date, ".xls")
-    latest_file <- paste0("./Arrears/Loan_Accounts-wanzhou-liyang.qin-",current_date,".xls")
+    
+    base_pattern <- paste0("Loan_Accounts-wanzhou-liyang.qin-",base_date)
+    latest_pattern <- paste0("Loan_Accounts-wanzhou-liyang.qin-",current_date)
+    base_file <- list.files("./Arrears", recursive =TRUE, all.files = TRUE, pattern = base_pattern)
+    base_file <- paste0("./Arrears/", base_file)
+    latest_file <- list.files("./Arrears", recursive = TRUE, all.files =TRUE, pattern = latest_pattern)
+    latest_file <- paste0("./Arrears/", latest_file)
     classes <- c(rep("character",5), "numeric", "character",rep("numeric",7), 
                  "Date", "numeric", "Date", rep("character",3), rep("numeric",5))
     base_data <- read.xlsx2(base_file, sheetIndex =1, header = TRUE, colClasses = classes, encoding = "urf-8")

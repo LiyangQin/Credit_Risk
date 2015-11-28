@@ -3,10 +3,14 @@ library(dplyr)
 rm(list=ls())
 arrears <- function(current_date, base_date){
     ## Read the data
-    base_file <- paste0("./Arrears/Loan_Accounts-chifeng-liyang.qin-",base_date, ".xls")
-    latest_file <- paste0("./Arrears/Loan_Accounts-chifeng-liyang.qin-",current_date,".xls")
-    classes <- c(rep("character",10), rep("Date", 2), rep("numeric",13))
-    base_data <- read.xlsx2(base_file, sheetIndex =1, header = TRUE, colClasses = classes, encoding = "urf-8")
+    base_pattern <- paste0("Loan_Accounts-chifeng-liyang.qin-",base_date)
+    latest_pattern <- paste0("Loan_Accounts-chifeng-liyang.qin-",current_date)
+    base_file <- list.files("./Arrears", recursive =TRUE, all.files = TRUE, pattern = base_pattern)
+    base_file <- paste0("./Arrears/", base_file)
+    latest_file <- list.files("./Arrears", recursive = TRUE, all.files =TRUE, pattern = latest_pattern)
+    latest_file <- paste0("./Arrears/", latest_file)
+    classes <- c(rep("character",11), rep("numeric",13), rep("Date", 2))
+    base_data <- read.xlsx2(base_file,sheetIndex =1, header = TRUE, colClasses = classes, encoding = "urf-8")
     latest_data <- read.xlsx2(latest_file, sheetIndex =1, header = TRUE, colClasses = classes, encoding = "urf-8")
     
     # Subset the accounts in arrears
@@ -71,8 +75,12 @@ arrears <- function(current_date, base_date){
     ############################################################################
     ## Repeat the process for Wanzhou
    
-    base_file <- paste0("./Arrears/Loan_Accounts-wanzhou-liyang.qin-",base_date, ".xls")
-    latest_file <- paste0("./Arrears/Loan_Accounts-wanzhou-liyang.qin-",current_date,".xls")
+    base_pattern <- paste0("Loan_Accounts-wanzhou-liyang.qin-",base_date)
+    latest_pattern <- paste0("Loan_Accounts-wanzhou-liyang.qin-",current_date)
+    base_file <- list.files("./Arrears", recursive =TRUE, all.files = TRUE, pattern = base_pattern)
+    base_file <- paste0("./Arrears/", base_file)
+    latest_file <- list.files("./Arrears", recursive = TRUE, all.files =TRUE, pattern = latest_pattern)
+    latest_file <- paste0("./Arrears/", latest_file)
     classes <- c(rep("character",5), "numeric", "character",rep("numeric",7), 
                  "Date", "numeric", "Date", rep("character",3), rep("numeric",5))
     base_data <- read.xlsx2(base_file, sheetIndex =1, header = TRUE, colClasses = classes, encoding = "urf-8")

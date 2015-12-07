@@ -142,7 +142,7 @@ arrears <- function(current_date, base_date){
         output_wz <- rbind(output_wz, repaid_output)
     }
     ## Write result to excel
-    file_dest <- paste0("./Arrears/Arrear_Changes-2015-", base_date ,".xlsx")
+    file_dest <- paste0("./Arrears/Arrear_Changes_", base_date ,".xlsx")
     wb <- createWorkbook()
     sheet1 <- createSheet(wb, sheetName = "Chifeng")
     sheet2 <- createSheet(wb,sheetName = "Wanzhou")

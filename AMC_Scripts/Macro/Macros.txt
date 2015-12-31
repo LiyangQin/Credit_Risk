@@ -1,0 +1,61 @@
+IsWas Branch Select
+
+Sheets("IsWasPi").PivotTables("PivotTable1").PivotFields("Branch").ClearAllFilters
+    Sheets("IsWasPi").PivotTables("PivotTable1").PivotFields("Branch").CurrentPage = Sheets("IsWasPi").Range("F10").Value
+    
+    Sheets("IsWasPi").PivotTables("PivotTable2").PivotFields("Branch").ClearAllFilters
+    Sheets("IsWasPi").PivotTables("PivotTable2").PivotFields("Branch").CurrentPage = Sheets("IsWasPi").Range("F10").Value
+    
+    Sheets("IsWasPi").PivotTables("PivotTable3").PivotFields("Branch").ClearAllFilters
+    Sheets("IsWasPi").PivotTables("PivotTable3").PivotFields("Branch").CurrentPage = Sheets("IsWasPi").Range("F10").Value
+    
+    Sheets("IsWasPi").PivotTables("PivotTable4").PivotFields("Branch").ClearAllFilters
+    Sheets("IsWasPi").PivotTables("PivotTable4").PivotFields("Branch").CurrentPage = Sheets("IsWasPi").Range("F10").Value
+    
+    Sheets("IsWasPi").PivotTables("PivotTable5").PivotFields("Branch").ClearAllFilters
+    Sheets("IsWasPi").PivotTables("PivotTable5").PivotFields("Branch").CurrentPage = Sheets("IsWasPi").Range("F10").Value
+    
+    Sheets("IsWasPi").PivotTables("PivotTable6").PivotFields("Branch").ClearAllFilters
+    Sheets("IsWasPi").PivotTables("PivotTable6").PivotFields("Branch").CurrentPage = Sheets("IsWasPi").Range("F10").Value
+    
+    Sheets("IsWasPi").PivotTables("PivotTable7").PivotFields("Branch").ClearAllFilters
+    Sheets("IsWasPi").PivotTables("PivotTable7").PivotFields("Branch").CurrentPage = Sheets("IsWasPi").Range("F10").Value
+    
+    Sheets("IsWasPi").PivotTables("PivotTable8").PivotFields("Branch").ClearAllFilters
+    Sheets("IsWasPi").PivotTables("PivotTable8").PivotFields("Branch").CurrentPage = Sheets("IsWasPi").Range("F10").Value
+    
+    Sheets("IsWasPi").PivotTables("PivotTable9").PivotFields("Branch").ClearAllFilters
+    Sheets("IsWasPi").PivotTables("PivotTable9").PivotFields("Branch").CurrentPage = Sheets("IsWasPi").Range("F10").Value
+
+    Sheets("IsWasPi").PivotTables("PivotTable10").PivotFields("Branch").ClearAllFilters
+    Sheets("IsWasPi").PivotTables("PivotTable10").PivotFields("Branch").CurrentPage = Sheets("IsWasPi").Range("F10").Value
+
+
+LoaanPi Branch SelectSub Macro3()
+    
+    Sheets("LoanPi").PivotTables("PivotTable1").PivotFields("Branch").ClearAllFilters
+    Sheets("LoanPi").PivotTables("PivotTable1").PivotFields("Branch").CurrentPage = Sheets("IsWasPi").Range("F10").Value
+    
+End Sub
+
+Loan Pi NewRenew
+Sub Macro4()
+
+    Sheets("LoanPi").PivotTables("PivotTable1").PivotFields("NewRenew").ClearAllFilters
+    Sheets("LoanPi").PivotTables("PivotTable1").PivotFields("NewRenew").CurrentPage = Sheets("IsWasPi").Range("F15").Value
+
+End Sub
+
+CollectionPi Branch Select
+
+  Sheets("CollectPi").PivotTables("PivotTable1").PivotFields("Branch").ClearAllFilters
+    Sheets("CollectPi").PivotTables("PivotTable1").PivotFields("Branch").CurrentPage = Sheets("IsWasPi").Range("F10").Value
+    
+    Sheets("CollectPi").PivotTables("PivotTable2").PivotFields("Branch").ClearAllFilters
+
+
+Vintage Macro
+
+Sheets("VintPi").PivotTables("PivotTable1").PivotFields("Branch").ClearAllFilters
+    Sheets("VintPi").PivotTables("PivotTable1").PivotFields("Branch").CurrentPage = Sheets("List").Range("D11").Value
+    Sheets("CollectPi").PivotTables("PivotTable2").PivotFields("Branch").CurrentPage = Sheets("IsWasPi").Range("F10").Value

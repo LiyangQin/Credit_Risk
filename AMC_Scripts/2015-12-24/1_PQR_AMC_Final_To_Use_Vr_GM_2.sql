@@ -1,4 +1,4 @@
-﻿-------------change date in line 10 and file names in line 24 and 35-- Last run December 30, 2015 for November 30, 2015 data---------------
+﻿-------------change date in line 10 and file names in line 24 and 35-- Last run December 31, 2015 for November 30, 2015 data---------------
 Use China_AMC
 
 declare @Mth as datetime
@@ -134,7 +134,7 @@ if object_id('PQR_AMC') is not null
 	Go
 
 	insert into PQR_AMC 
-	SELECT *, 'GIM' as OpsRegion FROM OPENROWSET('Microsoft.ACE.OLEDB.12.0','Excel 12.0;IMEX=1;Database=D:\OwnCloud\Grassland\Credit and Risk\Reports\Rawdata\KxlRpt20151130_Cycle_Corrected.xlsx','SELECT 
+	SELECT *, 'AMC' as OpsRegion FROM OPENROWSET('Microsoft.ACE.OLEDB.12.0','Excel 12.0;IMEX=1;Database=D:\OwnCloud\Grassland\Credit and Risk\Reports\Rawdata\KxlRpt20151130_Cycle_Corrected.xlsx','SELECT 
 	[LoanID],
 	[ClientID],
 	[ClientName],
@@ -237,7 +237,7 @@ if object_id('PQR_w') is not null
 drop table PQR_W
 */
 insert into PQR_AMC 
-SELECT *, 'GCQ' as OpsRegion FROM OPENROWSET('Microsoft.ACE.OLEDB.12.0','Excel 12.0;IMEX=1;Database=D:\OwnCloud\Grassland\Credit and Risk\Reports\Rawdata\wanzhou_KxlRpt.xlsx','SELECT [LoanID]
+SELECT *, 'wanzhou' as OpsRegion FROM OPENROWSET('Microsoft.ACE.OLEDB.12.0','Excel 12.0;IMEX=1;Database=D:\OwnCloud\Grassland\Credit and Risk\Reports\Rawdata\wanzhou_KxlRpt.xlsx','SELECT [LoanID]
       ,[ClientID]
       ,[ClientName]
       ,[LnOfcrName]
@@ -340,6 +340,7 @@ Alter table PQR_AMC add
 	DPD float,
 	OvduPrinciple int 
 GO
+
 Alter table PQR_AMC alter column ActCloseDate datetime
 GO
 
@@ -347,6 +348,7 @@ Delete from PQR_AMC where LoanID is NULL
 
 Update PQR_AMC set [Observation Date]=(select Mth from tempMth) 
 GO
+
 if object_id('DEL_TEMP') is not null
 	drop table DEL_TEMP
 
@@ -354,10 +356,13 @@ SELECT * INTO DEL_TEMP FROM OPENROWSET('Microsoft.ACE.OLEDB.12.0','Excel 12.0;IM
 union
 SELECT *  FROM OPENROWSET('Microsoft.ACE.OLEDB.12.0','Excel 12.0;IMEX=1;Database=D:\OwnCloud\Grassland\Credit and Risk\Reports\Rawdata\wanzhou_rptAtRisk.xlsx','SELECT txtLoanID,txtOvduPrin,txtDaysOvdu FROM [20151130$]')
 GO
+
 Update PQR_AMC set DPD=a.txtDaysOvdu from DEL_TEMP a where LoanID collate SQL_Latin1_General_CP1_CI_AS =a.txtLoanID
 go
+
 Update PQR_AMC set OvduPrinciple=a.txtOvduPrin from DEL_TEMP a where LoanID collate SQL_Latin1_General_CP1_CI_AS=a.txtLoanID
 GO
+
 Drop table DEL_TEMP
 
 Alter table PQR_AMC add 
@@ -390,6 +395,7 @@ Alter table PQR_AMC add
 	MonthDisbNo int,
 	MonthNo int
 go
+
 Update PQR_AMC set DPD=0 where DPD is NULL
 Update PQR_AMC set Balance=OutsPrin
 Update PQR_AMC set Current1=OutsPrin where DPD=0
@@ -427,12 +433,7 @@ Update PQR_AMC set MonthDisbursed =datepart(yy,DisbDt)*100 + datepart(mm,DisbDt)
 Update PQR_AMC set Mob=((Monthobs/100)-(MonthDisbursed/100))*12+((Monthobs-(Monthobs/100)*100)-(MonthDisbursed-(MonthDisbursed/100)*100))
 
 Update PQR_AMC set Monthterm=Nrterms
-
---Siguiente Linea modificada por GM ingresado el Cast Oct 27/2015
---select dateadd(m,cast(NrTerms as int),cast(disbdt as date)) from PQR_AMC
 Update PQR_AMC set MaturityExp =DATEADD(m,cast(Nrterms as int),cast(DisbDt as date))
---Hasta aquí
-
 Update PQR_AMC set MatExp= datepart(yy,[MaturityExp])*100 + datepart(mm,[MaturityExp])
 
 /*
@@ -440,9 +441,7 @@ update PQR_AMC set loancycle=substring(LoanID, 13,3)
 */
 
 Alter table PQR_AMC alter column loancycle int
-
 update PQR_AMC set loancycle=PrevLns+1
-Alter table PQR_AMC alter column loancycle int
 
 Update PQR_AMC set NewRenew='New' where loancycle=1
 Update PQR_AMC set NewRenew='Renew' where loancycle<>1
@@ -455,7 +454,9 @@ Update PQR_AMC set MthSales=NULL
 Update PQR_AMC set BusEquity=NULL
 Update PQR_AMC set FamIncom=NULL
 
---alter table tempTotal_Financial add OpsRegion nvarchar(50)
+/*alter table tempTotal_Financial add OpsRegion nvarchar(50)
+	update tempTotal_Financial set OpsRegion = 'AMC'
+*/
 
 Insert into tempTotal_Financial select 
 	LoanID as Lnnote, 
@@ -533,12 +534,37 @@ Insert into tempTotal_Financial select
 
 Drop Table PQR_AMC
 
-select Monthobs, Active_Client=count(lnnote),OutBalance=sum(Balance),"PaR1+"=sum(P1_5+P6_15+P16_30+P31_60+P61_90+P91_120+P121_150+P151_180+P180),"PaR5+"=sum(P6_15+P16_30+P31_60+P61_90+P91_120+P121_150+P151_180+P180),"PaR30+"=sum(P31_60+P61_90+P91_120+P121_150+P151_180+P180) from tempTotal_Financial group by Monthobs order by Monthobs desc
+select Monthobs,
+	Active_Client=count(lnnote),
+	OutBalance=sum(Balance),
+	"PaR1+"=sum(P1_5+P6_15+P16_30+P31_60+P61_90+P91_120+P121_150+P151_180+P180),
+	"PaR5+"=sum(P6_15+P16_30+P31_60+P61_90+P91_120+P121_150+P151_180+P180),
+	"PaR30+"=sum(P31_60+P61_90+P91_120+P121_150+P151_180+P180)
+	from tempTotal_Financial 
+	group by Monthobs 
+	order by Monthobs desc
 
 -----ISWAS PROCESS----
 
-SELECT lnnote, loancycle, prod, disbursement_date ,Prod as Product, balance, dpd, Branch, [observation date] as  transactiondate, MonthDisbursed, LO as officier,Monthobs,NewRenew,Monthterm,MaturityExp,opsregion  into IsFile_D from tempTotal_Financial where Monthobs=(select Mth1 from tempMth) order by lnnote asc
-
+SELECT lnnote,
+	loancycle,
+	prod,
+	disbursement_date,
+	Prod as Product,
+	balance,
+	dpd,
+	Branch,
+	[observation date] as  transactiondate,
+	MonthDisbursed,
+	LO as officier,
+	Monthobs,
+	NewRenew,
+	Monthterm,
+	MaturityExp,
+	OpsRegion  
+	into IsFile_D from tempTotal_Financial 
+	where Monthobs=(select Mth1 from tempMth) 
+	order by lnnote asc
 
 Alter table IsFile_D add Bal1 int, Del1 int
 
@@ -549,11 +575,27 @@ Update IsFile_D set balance=NULL
 Update IsFile_D set Dpd=NULL
 
 Execute sp_RENAME 'IsFile_D.balance', 'Bal0' , 'COLUMN'
- 
 Execute sp_RENAME 'IsFile_D.Dpd', 'Del0' , 'COLUMN'
- 
 
-SELECT lnnote, loancycle, prod, disbursement_date ,Prod as Product, balance, dpd, Branch, [observation date] as  transactiondate, MonthDisbursed, LO as officier,Monthobs,NewRenew,Monthterm,MaturityExp, opsregion  into WasFile_D from tempTotal_Financial where Monthobs=(select Mth_1 from tempMth) order by lnnote asc
+SELECT lnnote,
+	loancycle,
+	prod,
+	disbursement_date,
+	Prod as Product,
+	balance,
+	dpd,
+	Branch,
+	[observation date] as  transactiondate,
+	MonthDisbursed,
+	LO as officier,
+	Monthobs,
+	NewRenew,
+	Monthterm,
+	MaturityExp,
+	OpsRegion 
+	into WasFile_D from tempTotal_Financial 
+	where Monthobs=(select Mth_1 from tempMth) 
+	order by lnnote asc
 
 
 Alter table WasFile_D add Bal0 int, Del0 int
@@ -584,12 +626,9 @@ where (B.lnnote=A.lnnote and B.Branch=A.Branch)
 
 
 Update WasFile_D set Del1=-99 where Del1 is Null
-
 Update WasFile_D set Bal1=0 where Bal1 is Null
 
-
 Update WasFile_D set Del0=-99 where Newvintage1=(select Mth1 from tempMth) 
-
 Update WasFile_D set Bal0=0 where Newvintage1=(select Mth1 from tempMth)
 
 
@@ -611,8 +650,6 @@ Alter table WasFile_D add Range0 varchar(10),Range1 varchar(10), Range0In varcha
 --Update WasFile_D set WriteOff='NO' from RapportJournalier..Writeoffs, WasFile_D where lnnote<>lnnote
 
 --Update WasFile_D set WriteOff='YES' from RapportJournalier..Writeoffs, WasFile_D where lnnote=lnnote 
-
-
 
 Update WasFile_D set Range0= 'New' where Del0 =-99
 Update WasFile_D set Range0= 'Current' where Del0= 0
@@ -660,40 +697,83 @@ Update WasFile_D set Renewal=1 where Loancycle>1
 Update WasFile_D set Renewal=0 where Loancycle=1
 
 Alter table WasFile_D alter column officier Varchar(50)
-
 Alter table WasFile_D alter column Branch Varchar(50)
 
 Update WasFile_D set OriginalLO=(Branch+' - '+officier)
-
 Update WasFile_D set BranchZone= officier
-
 
 update WasFile_D set Branch1 ='CNAA' where Branch ='CNAA'
 update WasFile_D set Branch1 ='CNAB' where Branch ='CNAB'
 update WasFile_D set Branch1 ='CNAC' where Branch ='CNAC'
 
+CREATE TABLE dbo.temp_IsWasFile_D(
+	lnnote varchar(55) NULL,
+	[Loan Series] int NULL,
+	Product varchar(55) NULL,
+	disbursdate datetime NULL,
+	Branch varchar(50) NULL,
+	Bal0 int NULL,
+	Del0 int NULL,
+	Bal1 int NULL,
+	Del1 int NULL,
+	[Loan Officer] varchar(100) NULL,
+	BranchZone varchar (50) NULL,
+	Range0 varchar(50) NULL,
+	Range1 varchar(50) NULL,
+	Range0In varchar(50) NULL,
+	Range1In varchar(50) NULL,
+	RENEWAL varchar(50) NULL,
+	transactiondate datetime NULL,
+	Branch1 varchar(55) null,
+	Monthobs int null,
+	WriteOff varchar(5) null,
+	MaturityDate datetime NULL,
+	MonthTerm int NULL,
+	OpsRegion nvarchar(50) NULL
+)
 
-CREATE TABLE dbo.temp_IsWasFile_D(lnnote varchar(55) NULL,[Loan Series] int NULL,Product varchar(55) NULL,disbursdate datetime NULL, Branch varchar(50) NULL,Bal0 int NULL,Del0 int NULL,Bal1 int NULL, Del1 int NULL, [Loan Officer] varchar(100) NULL,BranchZone varchar (50) NULL, Range0 varchar(50) NULL,Range1 varchar(50) NULL,Range0In varchar(50) NULL,Range1In varchar(50) NULL,RENEWAL varchar(50) NULL,transactiondate datetime NULL, Branch1 varchar(55) null,Monthobs int null,WriteOff varchar(5) null,MaturityDate datetime NULL, MonthTerm int NULL, OpsRegion nvarchar(50) NULL)
+Insert into temp_IsWasFile_D 
+	select lnnote,
+	loancycle,
+	prod,
+	disbursement_date,
+	Branch,
+	Bal0,
+	Del0,
+	Bal1,
+	Del1,
+	OriginalLO,
+	BranchZone,
+	Range0,
+	Range1,
+	Range0In,
+	Range1In,
+	NewRenew,
+	transactiondate,
+	Branch1,
+	Monthobs,
+	WriteOff,
+	MaturityExp,
+	MonthTerm,
+	OpsRegion from WasFile_D 
 
-Insert into temp_IsWasFile_D select lnnote, loancycle, prod, disbursement_date , Branch  ,Bal0,Del0,Bal1,Del1,OriginalLO,BranchZone,Range0,Range1,Range0In,Range1In,NewRenew, transactiondate ,Branch1,Monthobs, WriteOff, MaturityExp, MonthTerm,opsregion from WasFile_D 
-
+/*alter table IsWasFile_D add OpsRegion nvarchar(50)
+Update IsWasFile_D set OpsRegion = 'AMC'
+*/
 
 drop table IsWasFile_D
 
 select * into IsWasFile_D from temp_IsWasFile_D order by lnnote
 
-
 drop table IsFile_D, WasFile_D , temp_IsWasFile_D
 
-
 Delete from China_AMC..Total_IsWas where Monthobs>=(select Mth1 from tempMth) 
-
---alter table Total_IsWas add OpsRegion nvarchar(50)
-
+ 
+/*alter table Total_IsWas add OpsRegion nvarchar(50)
+Update Total_IsWas set OpsRegion = 'AMC'
+*/
 Insert into China_AMC..Total_IsWas select * from IsWasFile_D
-
-use China_AMC 
-
+--use China_AMC 
 go
 
 declare @count as int
@@ -709,11 +789,9 @@ select @count = COUNT(distinct(monthobs)) from tempTotal_Financial where Monthob
 select @min = Min(monthobs) from tempTotal_Financial 
 select @max = Max(monthobs) from tempTotal_Financial 
  
-
 set @intCount = 1
 set @counter = @count -1
 set @Monthobs = @min
-
 
 while (@intCount <= @Rowc) and (@max >= @Monthobs) 
  begin
@@ -729,12 +807,9 @@ while (@intCount <= @Rowc) and (@max >= @Monthobs)
    end   
    set @intCount = @intCount +1
    set @counter = @counter - 1 
- 
  end
- 
  go 
-  
-
+ 
 declare @count as int
 declare @Rowc as int
 declare @min as int
@@ -748,11 +823,9 @@ select @count = COUNT(distinct(MonthDisbursed)) from tempTotal_Financial where M
 select @min = Min(MonthDisbursed) from tempTotal_Financial 
 select @max = Max(MonthDisbursed) from tempTotal_Financial 
  
-
 set @intCount = 1
 set @counter = @count -1
 set @MonthDisbursed = @min
-
 
 while (@intCount <= @Rowc) and (@max >= @MonthDisbursed) 
  begin
@@ -777,6 +850,7 @@ while (@intCount <= @Rowc) and (@max >= @MonthDisbursed)
  where d.clientid=[tempTotal_Financial].ClientID 
  and d.monthobs=[tempTotal_Financial].Monthobs 
  go*/
+
  update [tempTotal_Financial] set MaxDPD=dpd
  where maxdpd is null
  go

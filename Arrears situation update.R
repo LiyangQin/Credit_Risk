@@ -56,11 +56,11 @@ arrears <- function(current_date, base_date){
     ## Export the data to excel. 
     
     output_cf <- data.frame()
-	cf_txt <- paste("现汇报每日逾期变动情况如下：",base_date,"赤峰 Chifeng",sep=" ")
+	cf_txt <- paste("现汇报每日逾期变动情况如下：", base_date, "赤峰 Chifeng", sep=" ")
     
     if(exists("new_output")){
         output_cf <- rbind(output_cf, new_output)
-		cf_txt <- paste("新增逾期",nrow(new_output),"笔",nrow(new_output),"new loans in arrears",sep=" ")
+		cf_txt <- paste(cf_txt, "新增逾期", nrow(new_output), "笔",nrow(new_output), "new loans in arrears",sep=" ")
         rm(new_output)
     }
     
@@ -72,9 +72,10 @@ arrears <- function(current_date, base_date){
     
     if(exists("repaid_output")){
         output_cf <- rbind(output_cf, repaid_output)
-		cf_txt <- paste(cf_txt,"另有",nrow(repaid_output),"笔贷款还款","collected repayment from",nrow(repaid_output),"loans",sep=" ")
+		cf_txt <- paste(cf_txt,"逾期还款",nrow(repaid_output),"笔","collected repayment from",nrow(repaid_output),"loans",sep=" ")
         rm(repaid_output)
     }
+	
     
     ############################################################################
     ## Repeat the process for Wanzhou
@@ -143,13 +144,13 @@ arrears <- function(current_date, base_date){
     
     if(exists("closed_output")){
         output_wz <- rbind(output_wz, closed_output)
-		cf_txt <- paste(wz_txt,"逾期减少",nrow(closed_output),"笔",nrow(closed_output),"loans back to good standing",sep=" ")
+		wz_txt <- paste(wz_txt,"逾期减少",nrow(closed_output),"笔",nrow(closed_output),"loans back to good standing",sep=" ")
         rm(closed_output)
     }
     
     if(exists("repaid_output")){
         output_wz <- rbind(output_wz, repaid_output)
-		wz_txt <- paste(wz_txt,"另有",nrow(repaid_output),"笔贷款还款","collected repayment from",nrow(repaid_output),"loans",sep=" ")
+		wz_txt <- paste(wz_txt,"逾期还款",nrow(repaid_output),"笔","collected repayment from",nrow(repaid_output),"loans",sep=" ")
         rm(repaid_output)
     }
 
@@ -224,7 +225,7 @@ arrears <- function(current_date, base_date){
     
     if(exists("repaid_output")){
         output_js <- rbind(output_js, repaid_output)
-		js_txt <- paste(js_txt,"另有",nrow(repaid_output),"笔贷款还款","collected repayment from",nrow(repaid_output),"loans",sep=" ")
+		js_txt <- paste(js_txt,"逾期还款",nrow(repaid_output),"笔","collected repayment from",nrow(repaid_output),"loans",sep=" ")
     }
 	
 	##Describe findings
@@ -241,6 +242,5 @@ arrears <- function(current_date, base_date){
     addDataFrame(output_wz, sheet2, startRow=1, startColumn=1, row.names = FALSE)
     saveWorkbook(wb, file_dest)
 	addDataFrame(output_js, sheet3, startRow=1, startColumn=1, row.names = FALSE)
-	saveWorkbook(wb, file_dest)
 	print(output_text)
 }

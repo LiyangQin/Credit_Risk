@@ -1,0 +1,110 @@
+SELECT
+	loan.ID AS LoanID,
+	cfv13.`VALUE` AS Ethn,
+	cfv14.`VALUE` AS MarStat,
+	'' AS PartName,
+	cfv15.`VALUE` AS NrTotalDep,
+	cfv16.`VALUE` AS NrHouseDep,
+	'CN' CtryOrig,
+	'CN' Citizen,
+	cfv17.`VALUE` AS ID1Type,
+	cfv18.`VALUE` AS ID1Nr,
+	'' ID2Type,
+	'' ID2Nr,
+	'Mobile' Fon1Type,
+	a.MOBILEPHONE1 AS Fon1Nr,
+	'' Fon2Type,
+	'' Fon2Nr,
+	cfv19.`VALUE` AS IndivLkp1,
+	cfv20.`VALUE` AS IndivLkp2,
+	cfv21.`VALUE` AS IndivLkp3,
+	cfv22.`VALUE` AS IndivStr1,
+	'' IndivStr2,
+	cfv23.`VALUE` AS IndivStr3,
+	'' LnCharDt1,
+	cfv24.`VALUE` AS ClientType,
+	cfv25.`VALUE` AS LoanType,
+	'' GroupID,
+	'' Pres,
+	'' Secrty,
+	'' Treas,
+	'True' AS RecPmts,
+	'False' AS Archived,
+	loan.LOANNAME AS LnProd,
+	'' GrpLnID,
+	'' LastSchdDt,
+	'False' Rschd2
+FROM
+	client a
+LEFT JOIN loanaccount loan ON a.ENCODEDKEY = loan.ACCOUNTHOLDERKEY
+LEFT JOIN loantransaction loantrans ON loan.ENCODEDKEY = loantrans.PARENTACCOUNTKEY
+LEFT JOIN USER u ON loan.ASSIGNEDUSERKEY = u.ENCODEDKEY
+LEFT JOIN branch bran ON a.ASSIGNEDBRANCHKEY = bran.ENCODEDKEY
+LEFT JOIN customfieldvalue cfv13 ON cfv13.PARENTKEY = a.ENCODEDKEY AND cfv13.CUSTOMFIELDKEY = '8a131ecf4a0332c1014a09af92810408'
+LEFT JOIN customfieldvalue cfv14 ON cfv14.PARENTKEY = a.ENCODEDKEY AND cfv14.CUSTOMFIELDKEY = '8a131ecf4a0332c1014a09b8bed10672'
+LEFT JOIN customfieldvalue cfv15 ON cfv15.PARENTKEY = a.ENCODEDKEY AND cfv15.CUSTOMFIELDKEY = '8a131ecf4a0332c1014a09b92f08067f'
+LEFT JOIN customfieldvalue cfv16 ON cfv16.PARENTKEY = a.ENCODEDKEY AND cfv16.CUSTOMFIELDKEY = '8a131ecf4a0332c1014a09b996e206ac'
+LEFT JOIN customfieldvalue cfv17 ON cfv17.PARENTKEY = a.ENCODEDKEY AND cfv17.CUSTOMFIELDKEY = '8a131ecf4a0332c1014a09ef7c471271'
+LEFT JOIN customfieldvalue cfv18 ON cfv18.PARENTKEY = a.ENCODEDKEY AND cfv18.CUSTOMFIELDKEY = '8a131ecf4a0332c1014a09f0484d1297'
+LEFT JOIN customfieldvalue cfv19 ON cfv19.PARENTKEY = a.ENCODEDKEY AND cfv19.CUSTOMFIELDKEY = '8a131ecf4a0332c1014a09b2177f04b6'
+LEFT JOIN customfieldvalue cfv20 ON cfv20.PARENTKEY = a.ENCODEDKEY AND cfv20.CUSTOMFIELDKEY = '8a131ecf4a0332c1014a09b331e404eb'
+LEFT JOIN customfieldvalue cfv21 ON cfv21.PARENTKEY = a.ENCODEDKEY AND cfv21.CUSTOMFIELDKEY = '8a131ecf4a0332c1014a0997e8ac01f9'
+LEFT JOIN customfieldvalue cfv22 ON cfv22.PARENTKEY = a.ENCODEDKEY AND cfv22.CUSTOMFIELDKEY = '8a131ecf4a0332c1014a09cc61580cf1'
+LEFT JOIN customfieldvalue cfv23 ON cfv23.PARENTKEY = a.ENCODEDKEY AND cfv23.CUSTOMFIELDKEY = '8a131ecf4a0332c1014a09cb069e0c92'
+LEFT JOIN customfieldvalue cfv24 ON cfv24.PARENTKEY = a.ENCODEDKEY AND cfv24.CUSTOMFIELDKEY = '2c9f8d934d9d0213014de6d96fbb0d17'
+LEFT JOIN customfieldvalue cfv25 ON cfv25.PARENTKEY = loan.ENCODEDKEY AND cfv25.CUSTOMFIELDKEY = '2c9f94c44f0ae177014f62722095683e'
+WHERE
+	loan.LOANAMOUNT - (
+		SELECT
+			SUM(loantrans.PRINCIPALAMOUNT)
+		FROM
+			loanaccount loan1
+		LEFT JOIN loantransaction loantrans ON loan1.ENCODEDKEY = loantrans.PARENTACCOUNTKEY
+		WHERE
+			loan.id = loan1.id
+		AND loantrans.TYPE NOT IN (
+			'DISBURSMENT',
+			'IMPORT',
+			'DISBURSMENT_ADJUSTMENT',
+			'REPAYMENT_ADJUSTMENT'
+		)
+		AND loantrans.REVERSALTRANSACTIONKEY IS NULL
+		AND loantrans.ENTRYDATE <= '2015-12-31-24'
+		AND (
+			loan.DISBURSEMENTDATE <= '2015-12-31-24'
+			OR loan.CLOSEDDATE >= '2015-12-31-24'
+		)
+		AND (
+			(
+				loan.DISBURSEMENTDATE <= '2015-12-31-24'
+			)
+			OR (
+				loan.ACCOUNTSTATE IN ('CLOSED')
+				AND loan.CLOSEDDATE > '2015-12-31-24'
+			)
+		)
+		GROUP BY
+			loan.ID
+		HAVING
+			COUNT(loan.ID) >= 1
+	) > 0
+AND (
+	loan.DISBURSEMENTDATE <= '2015-12-31-24'
+	OR loan.CLOSEDDATE >= '2015-12-31-24'
+)
+AND (
+	(
+		loan.DISBURSEMENTDATE <= '2015-12-31-24'
+	)
+	OR (
+		loan.ACCOUNTSTATE IN ('CLOSED')
+		AND loan.CLOSEDDATE >= '2015-12-31-24'
+	)
+)
+GROUP BY
+	loan.ID
+HAVING
+	COUNT(loan.ID) >= 1
+ORDER BY
+	bran. NAME,
+	concat(u.FIRSTNAME, u.LASTNAME)

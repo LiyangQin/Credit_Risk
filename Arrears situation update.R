@@ -5,10 +5,10 @@ arrears <- function(current_date, base_date){
     ## Read the data
     base_pattern <- paste0("Loan_Accounts-chifeng-liyang.qin-",base_date)
     latest_pattern <- paste0("Loan_Accounts-chifeng-liyang.qin-",current_date)
-    base_file <- list.files("./Arrears", recursive =TRUE, all.files = TRUE, pattern = base_pattern)
-    base_file <- paste0("./Arrears/", base_file)
-    latest_file <- list.files("./Arrears", recursive = TRUE, all.files =TRUE, pattern = latest_pattern)
-    latest_file <- paste0("./Arrears/", latest_file)
+    base_file <- list.files("D:/360MoveData/Documents/Arrears/", recursive =TRUE, all.files = TRUE, pattern = base_pattern)
+    base_file <- paste0("D:/360MoveData/Documents/Arrears/", base_file)
+    latest_file <- list.files("D:/360MoveData/Documents/Arrears/", recursive = TRUE, all.files =TRUE, pattern = latest_pattern)
+    latest_file <- paste0("D:/360MoveData/Documents/Arrears/", latest_file)
     classes <- c(rep("character",11), rep("numeric",13), rep("Date", 2))
     base_data <- read.xlsx2(base_file,sheetIndex =1, header = TRUE, colClasses = classes, encoding = "urf-8")
     latest_data <- read.xlsx2(latest_file, sheetIndex =1, header = TRUE, colClasses = classes, encoding = "urf-8")
@@ -243,4 +243,3 @@ arrears <- function(current_date, base_date){
     saveWorkbook(wb, file_dest)
 	addDataFrame(output_js, sheet3, startRow=1, startColumn=1, row.names = FALSE)
 	print(output_text)
-}

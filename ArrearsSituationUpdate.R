@@ -5,16 +5,16 @@ arrears <- function(current_date, base_date){
     ## Read the data
     base_pattern <- paste0("Loan_Accounts-chifeng-liyang.qin-",base_date)
     latest_pattern <- paste0("Loan_Accounts-chifeng-liyang.qin-",current_date)
-    base_file <- list.files("D:/360MoveData/Documents/Arrears/", recursive =TRUE, all.files = TRUE, pattern = base_pattern)
-    base_file <- paste0("D:/360MoveData/Documents/Arrears/", base_file)
-    latest_file <- list.files("D:/360MoveData/Documents/Arrears/", recursive = TRUE, all.files =TRUE, pattern = latest_pattern)
-    latest_file <- paste0("D:/360MoveData/Documents/Arrears/", latest_file)
+    base_file <- list.files("D:/360MoveData/Documents/Arrears/Mambu/", recursive =TRUE, all.files = TRUE, pattern = base_pattern)
+    base_file <- paste0("D:/360MoveData/Documents/Arrears/Mambu/", base_file)
+    latest_file <- list.files("D:/360MoveData/Documents/Arrears/Mambu/", recursive = TRUE, all.files =TRUE, pattern = latest_pattern)
+    latest_file <- paste0("D:/360MoveData/Documents/Arrears/Mambu/", latest_file)
     classes <- c(rep("character",11), rep("numeric",13), rep("Date", 2))
     base_data <- read.xlsx2(base_file,sheetIndex =1, header = TRUE, colClasses = classes, encoding = "urf-8")
     latest_data <- read.xlsx2(latest_file, sheetIndex =1, header = TRUE, colClasses = classes, encoding = "urf-8")
 	
     ## Prepare excel file for exporting
-    file_dest <- paste0("./Arrears/Arrear_Changes_", base_date ,".xlsx")
+    file_dest <- paste0("./Arrears/Result/Arrear_Changes_", base_date ,".xlsx")
     wb <- createWorkbook()
     sheet1 <- createSheet(wb, sheetName = "GIM")
     sheet2 <- createSheet(wb,sheetName = "GCQ")
@@ -97,10 +97,7 @@ arrears <- function(current_date, base_date){
         rm(repaid_output)
     }
 	
-	if(!exists("new_output") & !exists("closed_output") &!exists("repaid_output")){
-	    cf_txt <- "赤峰无变动 No delinquency change in GIM"
-	}
-	
+
 	addDataFrame(output_cf, sheet1, startRow=1, startColumn=1, row.names = FALSE)
 	saveWorkbook(wb, file_dest)
 	print(cf_ptf)
@@ -196,10 +193,7 @@ arrears <- function(current_date, base_date){
         rm(repaid_output)
     }
 	
-	if(!exists("new_output") & !exists("closed_output") &!exists("repaid_output")){
-	    cq_txt <- "重庆无变动 No delinquency change in GCQ"
-	}
-	
+
 	addDataFrame(output_cq, sheet2, startRow=1, startColumn=1, row.names = FALSE)
 	saveWorkbook(wb, file_dest)
 	print(cq_ptf)

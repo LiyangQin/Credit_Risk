@@ -77,23 +77,23 @@ arrears <- function(current_date, base_date){
     ## Export the data to excel. 
     
     output_cf <- data.frame()
-	cf_txt <- paste("现汇报每日逾期变动情况如下：", base_date, "赤峰 Chifeng", sep=" ")
+	cf_txt <- paste("现汇报每日逾期变动情况如下：", base_date, "赤峰 GIM", sep=" ")
     
     if(exists("new_output")){
         output_cf <- rbind(output_cf, new_output)
-		cf_txt <- paste(cf_txt, "新增逾期", nrow(new_output), "笔",nrow(new_output), "new loans in arrears",sep=" ")
+		cf_txt <- paste(cf_txt, "新增逾期", nrow(new_output), "笔",sep=" ")
         rm(new_output)
     }
     
     if(exists("closed_output")){
         output_cf <- rbind(output_cf, closed_output)
-		cf_txt <- paste(cf_txt,"逾期减少",nrow(closed_output),"笔",nrow(closed_output),"loans back to good standing",sep=" ")
+		cf_txt <- paste(cf_txt,"逾期减少",nrow(closed_output),"笔",sep=" ")
         rm(closed_output)
     }
     
     if(exists("repaid_output")){
         output_cf <- rbind(output_cf, repaid_output)
-		cf_txt <- paste(cf_txt,"逾期还款",nrow(repaid_output),"笔","collected repayment from",nrow(repaid_output),"loans",sep=" ")
+		cf_txt <- paste(cf_txt,"逾期还款",nrow(repaid_output),"笔",sep=" ")
         rm(repaid_output)
     }
 	
@@ -173,23 +173,23 @@ arrears <- function(current_date, base_date){
 	## Export the data to variable. 
     
     output_cq<- data.frame()
-	cq_txt <- "万州 chongqing"
+	cq_txt <- "重庆 GCQ"
     	
     if(exists("new_output")){
         output_cq <- rbind(output_cq, new_output)
-		cq_txt <- paste(cq_txt,"新增逾期",nrow(new_output),"笔",nrow(new_output),"new loans in arrears",sep=" ")
+		cq_txt <- paste(cq_txt,"新增逾期",nrow(new_output),"笔",sep=" ")
         rm(new_output)
     }
     
     if(exists("closed_output")){
         output_cq <- rbind(output_cq, closed_output)
-		cq_txt <- paste(cq_txt,"逾期减少",nrow(closed_output),"笔",nrow(closed_output),"loans back to good standing",sep=" ")
+		cq_txt <- paste(cq_txt,"逾期减少",nrow(closed_output),"笔",sep=" ")
         rm(closed_output)
     }
     
     if(exists("repaid_output")){
         output_cq <- rbind(output_cq, repaid_output)
-		cq_txt <- paste(cq_txt,"逾期还款",nrow(repaid_output),"笔","collected repayment from",nrow(repaid_output),"loans",sep=" ")
+		cq_txt <- paste(cq_txt,"逾期还款",nrow(repaid_output),"笔",sep=" ")
         rm(repaid_output)
     }
 	
@@ -274,21 +274,21 @@ arrears <- function(current_date, base_date){
    ## Export the data to variable. 
    
     output_hn <- data.frame()
-	hn_txt <- "吉首 hunan"
+	hn_txt <- "吉首 GHN"
     
     if(exists("new_output")){
         output_hn <- rbind(output_hn, new_output)
-		hn_txt <- paste(hn_txt, "新增逾期",nrow(new_output),"笔",nrow(new_output),"new loans in arrears" ,sep=" ")
+		hn_txt <- paste(hn_txt, "新增逾期",nrow(new_output),"笔",sep=" ")
     }
     
     if(exists("closed_output")){
         output_hn <- rbind(output_hn, closed_output)
-		hn_txt <- paste(hn_txt,"逾期减少",nrow(closed_output),"笔",nrow(closed_output),"loans back to good standing",sep=" ")
+		hn_txt <- paste(hn_txt,"逾期减少",nrow(closed_output),"笔",sep=" ")
     }
     
     if(exists("repaid_output")){
         output_hn <- rbind(output_hn, repaid_output)
-		hn_txt <- paste(hn_txt,"逾期还款",nrow(repaid_output),"笔","collected repayment from",nrow(repaid_output),"loans",sep=" ")
+		hn_txt <- paste(hn_txt,"逾期还款",nrow(repaid_output),"笔",sep=" ")
     }
 	
 	addDataFrame(output_hn, sheet3, startRow=1, startColumn=1, row.names = FALSE)
@@ -308,6 +308,6 @@ arrears <- function(current_date, base_date){
         print(hn_txt)
     }
     
-    print("祝好，丽洋 Regards, Liyang")
+    print("祝好，丽洋")
 
 }

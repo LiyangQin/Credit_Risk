@@ -1,6 +1,5 @@
 library(xlsx)
 library(dplyr)
-rm(list=ls())
 arrears <- function(current_date, base_date){
     ## Read the data
     base_pattern <- paste0("Loan_Accounts-chifeng-liyang.qin-",base_date)

@@ -9,7 +9,11 @@ arrears <- function(current_date, base_date){
     base_file <- paste0("D:/360MoveData/Documents/Arrears/Mambu/", base_file)
     latest_file <- list.files("D:/360MoveData/Documents/Arrears/Mambu/", recursive = TRUE, all.files =TRUE, pattern = latest_pattern)
     latest_file <- paste0("D:/360MoveData/Documents/Arrears/Mambu/", latest_file)
+<<<<<<< HEAD
     classes <- c(rep("character",11), rep("numeric",13), rep("Date", 2),"numeric")
+=======
+    classes <- c(rep("character",11), rep("numeric",13), rep("Date", 2))
+>>>>>>> 2485dd1... Initial commite for write off collection script
     base_data <- read.xlsx2(base_file,sheetIndex =1, header = TRUE, colClasses = classes, encoding = "urf-8")
     latest_data <- read.xlsx2(latest_file, sheetIndex =1, header = TRUE, colClasses = classes, encoding = "urf-8")
 	

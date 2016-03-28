@@ -1,12 +1,13 @@
 portfoliotest = function(current_date){
 ## operation site name as shown in the file    
-location <- c("chifeng","wanzhou","jishou")
+location <- c("chifeng","wanzhou","jishou","china")
 ## Column names
 classes <- c(rep("character",11), rep("numeric",13), rep("Date", 2),"numeric")
 
-for(i in 1:3){
+for(i in 1:4){
     # load in the data
     site <- location[i]
+    print(site)
     latest_pattern <- paste0("Loan_Accounts-",site,"-liyang.qin-",current_date)
     latest_file <- list.files("D:/360MoveData/Documents/Arrears/Mambu/", recursive = TRUE, all.files =TRUE, pattern = latest_pattern)
     latest_file <- paste0("D:/360MoveData/Documents/Arrears/Mambu/", latest_file)
@@ -27,15 +28,19 @@ for(i in 1:3){
         productDis <- productDis %>% mutate(percent = sprintf("%.1f %%", 100*OS.Portfolio / sum(productDis$OS.Portfolio)))
         productDis <- productDis %>% mutate(OS.Portfolio = format(OS.Portfolio, big.mark = ","))
         # branch analysis
-        branch <- latest_data %>% group_by(Branch) %>% summarise(OS.Portfolio = sum(Principal.Balance))
+        if(site == "china"){
+            branch <- latest_data %>% group_by(受理支行Branch) %>% summarise(OS.Portfolio = sum(Principal.Balance))
+        }else{
+        branch <-latest_data %>% group_by(Branch) %>% summarise(OS.Portfolio = sum(Principal.Balance))
+        }
         # format numbers
-         branch <- branch %>% mutate(OS.Portfolio=format(OS.Portfolio, big.mark = ","))
+        branch <- branch %>% mutate(OS.Portfolio=format(OS.Portfolio, big.mark = ","))
     }else{
     # Add in product.PAR value when there is delinquency account
     ## create PAR.Value by adding up OS principal by Loan.Name
     product.PAR<- product.PAR %>% group_by(Loan.Name) %>% summarise(PAR.Value = sum(Principal.Balance))
     ## combine three lists by Loan.Name, overall list / delinquency list / product list
-    product <- product %>% left_join(product.PAR) %>% left_join(product.list) 
+    product <- product %>% left_join(product.PAR) %>% left_join(product.list)
     ## furthur group them by sub product
     productDis <- aggregate(OS.Portfolio ~ Subtype, data = product, sum)
     product.PAR <- aggregate(PAR.Value ~ Subtype, data = product, sum)
@@ -47,13 +52,20 @@ for(i in 1:3){
     productDis <- productDis %>% mutate(PAR.Value = format(PAR.Value, big.mark = ","))
     
     ## branch analysis
+    if(site == "china"){
+        branch <- latest_data %>% group_by(受理支行Branch) %>% summarise(OS.Portfolio = sum(Principal.Balance))
+        branch.PAR <- latest_data %>% filter(Account.State == "In Arrears") %>% group_by(受理支行Branch) %>% summarise(PAR.Value = sum(Principal.Balance))
+        branch <- left_join(branch, branch.PAR)
+        branch <- branch %>% mutate(In.Risk=PAR.Value/OS.Portfolio) %>% mutate(In.Risk = sprintf("%.1f %%", 100*In.Risk)) 
+        branch <- branch %>% mutate(OS.Portfolio=format(OS.Portfolio, big.mark = ","))%>% mutate(PAR.Value=format(PAR.Value, big.mark = ","))
+    }else{
     branch <- latest_data %>% group_by(Branch) %>% summarise(OS.Portfolio = sum(Principal.Balance))
     branch.PAR <- latest_data %>% filter(Account.State == "In Arrears") %>% group_by(Branch) %>% summarise(PAR.Value = sum(Principal.Balance))
     branch <- left_join(branch, branch.PAR)
     branch <- branch %>% mutate(In.Risk=PAR.Value/OS.Portfolio) %>% mutate(In.Risk = sprintf("%.1f %%", 100*In.Risk)) 
     branch <- branch %>% mutate(OS.Portfolio=format(OS.Portfolio, big.mark = ","))%>% mutate(PAR.Value=format(PAR.Value, big.mark = ","))
     }
-    
+    }
     print(productDis)
     print(branch)
     }
